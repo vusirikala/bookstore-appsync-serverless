@@ -1,0 +1,60 @@
+schema {
+    query: Query
+    mutations: Mutation 
+}
+
+type Query { 
+    getBookById (book: ID!): Book!        #! means the query should return a Book type
+    listBooks (limit: Int!, nextToken: String): BooksPage!   
+    myOrders(limit: Int!, nextToken: String): OrderItemsPage          
+}
+
+type BooksPage {                            #This type is used for pagination when listing books                      
+    books: [Book]
+    nextToken: String
+}
+
+type OrderItemsPage {
+    orderItem: [OrderItem]
+    nextToken: String
+}
+
+type Mutation {
+    createBook(newBook: BookInput): Book! @aws_auth(cognito_groups: ["Admin"])        # Only users in the "Admin" group can call this method
+    createOrder(newOrder: OrderInput): Bookean!     #The return value represents success/failure of the mutation. 
+}
+
+input BookInput {                   # "input" is a special type in graphql used for inputs to mutations. 
+    title: String!
+    description: String
+    imageUrl: AWSURL
+    author: String!
+    price: Float!
+}
+
+input OrderInput {
+    items: [OrderItemInput]
+}
+
+input OrderItemInput {
+    bookId: ID!
+    quantity: Int!
+}
+
+type Book {
+    bookId: ID!                             #! means mandatory field 
+    title: String!
+    description: String
+    imageUrl: AWSURL
+    author: String!
+    price: Float!
+    createdAt: AWSDateTime!
+    updatedAt: AWSDateTime!
+}
+
+type OrderItem {
+    userId: ID!
+    orderId: ID!
+    book: Book!
+    quantity: Int!
+}

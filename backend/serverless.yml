@@ -6,6 +6,33 @@ provider:
   stage: dev
   region: us-east-1
 
+plugins: 
+  - serverless-appsync-plugin
+
+custom: 
+  appSync:
+    name: BookStoreAppSyncAPI
+    authenticationType: AMAZON_COGNITO_USER_POOlS    # API_KEY or AWS_IAM or AMAZON_COGNITO_USER_POOlS or OPENID_CONNECT
+    schema: 
+    userPoolConfig:
+      awsRegion: ${self:provider.region}
+      defaultAction: ALLOW
+      userPoolId: {"Ref": "CognitoUserPool"}
+    mappingTemplatesLocation: mapping-templates     # Pointing to mapping-templates folder.
+    mappingTemplates: 
+      - type: Query
+        field: getBookById
+        dataSource: booksTable                               # Data source used to resolve the query 
+        request: Query.getBookById.request.vtl              # This vtl resolver mapping template converts graphql query to dynamodb query
+        response: Query.getBookById.response.vtl            # This vtl resolver mapping template converts dynamodb response to graphql response
+    dataSources: 
+      - type: AMAZON_DYNAMODB
+        name: booksTable
+        config: 
+          tableName: {"Ref": "BooksTable"}
+         
+      - type: AWS_LAMBDA
+
 # you can add CloudFormation resource templates here
 resources:
   Resources:
