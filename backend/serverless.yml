@@ -12,7 +12,7 @@ plugins:
 custom: 
   appSync:
     name: BookStoreAppSyncAPI
-    authenticationType: AMAZON_COGNITO_USER_POOlS    # API_KEY or AWS_IAM or AMAZON_COGNITO_USER_POOlS or OPENID_CONNECT
+    authenticationType: "AMAZON_COGNITO_USER_POOLS"    # API_KEY or AWS_IAM or AMAZON_COGNITO_USER_POOlS or OPENID_CONNECT
     schema: 
     userPoolConfig:
       awsRegion: ${self:provider.region}
@@ -25,13 +25,16 @@ custom:
         dataSource: booksTable                               # Data source used to resolve the query 
         request: Query.getBookById.request.vtl              # This vtl resolver mapping template converts graphql query to dynamodb query
         response: Query.getBookById.response.vtl            # This vtl resolver mapping template converts dynamodb response to graphql response
+      - type: Mutation
+        field: createBook
+        dataSource: booksTable
+        request: Mutation.createBook.request.vtl
+        response: Mutation.createBook.response.vtl
     dataSources: 
-      - type: AMAZON_DYNAMODB
+      - type: "AMAZON_DYNAMODB"
         name: booksTable
         config: 
           tableName: {"Ref": "BooksTable"}
-         
-      - type: AWS_LAMBDA
 
 # you can add CloudFormation resource templates here
 resources:

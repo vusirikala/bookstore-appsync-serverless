@@ -1,6 +1,6 @@
 schema {
     query: Query
-    mutations: Mutation 
+    mutation: Mutation 
 }
 
 type Query { 
@@ -21,7 +21,7 @@ type OrderItemsPage {
 
 type Mutation {
     createBook(newBook: BookInput): Book! @aws_auth(cognito_groups: ["Admin"])        # Only users in the "Admin" group can call this method
-    createOrder(newOrder: OrderInput): Bookean!     #The return value represents success/failure of the mutation. 
+    createOrder(newOrder: OrderInput): Boolean!     #The return value represents success/failure of the mutation. 
 }
 
 input BookInput {                   # "input" is a special type in graphql used for inputs to mutations. 
