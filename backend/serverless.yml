@@ -92,12 +92,75 @@ resources:
         UserPoolName: BookStoreUserPool
         UsernameAttributes:
           - phone_number
+        AutoVerifiedAttributes:
+          - phone_number
+        SmsAuthenticationMessage: "Your Bookstore authentication code is {####}"
+        SmsVerificationMessage: "Your Bookstore verification code is {####}"
+        SmsConfiguration: 
+          ExternalId: "BookStoreUserPoolSNSId"
+          SnsCallerArn: {"Fn::GetAtt": ["CognitoUserPoolSNSIAMRole", "Arn"]}
+          SnsRegion: ${self:provider.region}
         Schema:
           - Name: email
           - Name: phone_number
           - Name: given_name
           - Name: family_name
           - Name: birthdate
+
+
+    CognitoUserPoolSNSIAMRole: 
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: "Allow"
+              Principal: 
+                Service: 
+                  - "cognito-idp.amazonaws.com"
+              Action: 
+                - "sts:AssumeRole"
+        Policies:
+          - PolicyName: "CognitoSNSPolicy"
+            PolicyDocument: 
+              Version: "2012-10-17"
+              Statement: 
+                - Effect: "Allow"
+                  Action: "sns:Publish"
+                  Resource: "*"  # {"Fn::GetAtt": ["SNSTopic", "TopicArn"]}
+
+
+    SNSTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: SMSVerificationCode
+        Subscription:
+          - Endpoint: "+18883034577"
+            Protocol: sms
+
+
+    # SNSTopicPolicy:
+    #   Type: AWS::SNS::TopicPolicy
+    #   Properties:
+    #     PolicyDocument:
+    #       Version: "2012-10-17"
+    #       Statement: 
+    #         - Effect: Allow
+    #           Principal:
+    #             Federated:
+    #               - "cognito-identity.amazonaws.com" 
+    #           Action: 
+    #             - "sts:AssumeRoleWithWebIdentity"
+    #     Topics:
+    #       -  {"Fn::GetAtt": ["SNSTopic", "TopicArn"]}
+   
+   
+   # SNSSubcription:
+    #   Type: AWS::SNS::Subscription
+    #   Properties:
+    #     TopicArn: {"Fn::GetAtt": ["SNSTopic", "TopicArn"]}
+    #     Protocol: sms
+    #     Endpoint: "+15125775302"
 
 
     CognitoUserPoolClient:

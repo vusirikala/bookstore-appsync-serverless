@@ -4,6 +4,19 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+
+import { Amplify, Auth } from 'aws-amplify';
+
+Amplify.configure({
+    Auth: {
+        region: 'us-east-1',
+        userPoolId: 'us-east-1_zenO84r8v',
+        userPoolWebClientId: 'eba28srg1q8rti1j62tgtuegj',
+        mandatorySignIn: true,
+    }
+});
+
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
